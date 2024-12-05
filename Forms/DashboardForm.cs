@@ -26,7 +26,7 @@ namespace ExpenseTracker.Forms
         private TableLayoutPanel summaryPanel;
         private TableLayoutPanel chartsPanel;
         private TableLayoutPanel filterPanel;
-        private string currentUsername;
+        private new readonly string currentUsername;
 
         public DashboardForm(string username) : base(username)
         {
@@ -64,7 +64,7 @@ namespace ExpenseTracker.Forms
             try
             {
                 this.Text = "Expense Dashboard";
-                this.Size = new Size(1200, 800);
+                this.Size = new Size(1100, 700);
                 this.WindowState = FormWindowState.Maximized;
 
                 // Initialize date pickers with default values
@@ -85,24 +85,27 @@ namespace ExpenseTracker.Forms
                 {
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
-                    RowCount = 3,
-                    Padding = new Padding(20),
-                    BackColor = Color.White
+                    RowCount = 5,
+                    Padding = new Padding(25),
+                    BackColor = Color.LightGray
                 };
 
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));  // Filter panel
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 2));
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));  // Filter panel
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 2));
                 mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100)); // Summary panel
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));   // Charts panel
-
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 2));
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 70));   // Charts panel
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
                 // Initialize all panels
                 InitializeFilterPanel();
                 InitializeSummaryPanel();
                 InitializeChartsPanel();
 
                 // Add panels to main layout
-                mainLayout.Controls.Add(filterPanel, 0, 0);
-                mainLayout.Controls.Add(summaryPanel, 0, 1);
-                mainLayout.Controls.Add(chartsPanel, 0, 2);
+                mainLayout.Controls.Add(filterPanel, 0, 1);
+                mainLayout.Controls.Add(summaryPanel, 0, 3);
+                mainLayout.Controls.Add(chartsPanel, 0, 5);
 
                 this.Controls.Add(mainLayout);
 
@@ -120,55 +123,78 @@ namespace ExpenseTracker.Forms
             filterPanel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                ColumnCount = 5,
+                ColumnCount = 7,
                 RowCount = 1,
                 BackColor = Color.WhiteSmoke,
-                Margin = new Padding(0, 0, 0, 10)
+                Margin = new Padding(0, 0, 0, 10),
+                Padding = new Padding(10)
             };
 
             var lblStartDate = new Label
             {
                 Text = "Start Date:",
                 TextAlign = ContentAlignment.MiddleRight,
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                Margin = new Padding(5)
             };
 
             var lblEndDate = new Label
             {
                 Text = "End Date:",
                 TextAlign = ContentAlignment.MiddleRight,
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                Margin = new Padding(5)
             };
 
             dtpStartDate = new DateTimePicker
             {
                 Format = DateTimePickerFormat.Short,
                 Value = DateTime.Today.AddMonths(-1),
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
+                DropDownAlign = LeftRightAlignment.Left,
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                Width = 120,
+                Margin = new Padding(5),
+                BackColor = Color.White
             };
 
             dtpEndDate = new DateTimePicker
             {
                 Format = DateTimePickerFormat.Short,
                 Value = DateTime.Today,
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
+                DropDownAlign = LeftRightAlignment.Left,
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                Width = 120,
+                Margin = new Padding(5),
+                BackColor = Color.White
             };
 
             btnApplyFilter = new Button
             {
                 Text = "Apply Filter",
-                Dock = DockStyle.Fill,
                 BackColor = Color.FromArgb(0, 120, 215),
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Width = 100,
+                Height = 30,
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                Margin = new Padding(10, 0, 10, 0),
+                Anchor = AnchorStyles.None,
+                Cursor = Cursors.Hand
             };
+            btnApplyFilter.FlatAppearance.BorderColor = Color.FromArgb(0, 100, 195);
             btnApplyFilter.Click += (s, e) => LoadDashboardData();
 
-            filterPanel.Controls.Add(lblStartDate, 0, 0);
-            filterPanel.Controls.Add(dtpStartDate, 1, 0);
-            filterPanel.Controls.Add(lblEndDate, 2, 0);
-            filterPanel.Controls.Add(dtpEndDate, 3, 0);
-            filterPanel.Controls.Add(btnApplyFilter, 4, 0);
+            filterPanel.Controls.Add(lblStartDate, 1, 0);
+            filterPanel.Controls.Add(dtpStartDate, 2, 0);
+            filterPanel.Controls.Add(lblEndDate, 3, 0);
+            filterPanel.Controls.Add(dtpEndDate, 4, 0);
+            filterPanel.Controls.Add(btnApplyFilter, 5, 0);
         }
 
         private void InitializeSummaryPanel()
@@ -357,7 +383,6 @@ namespace ExpenseTracker.Forms
                 
                 if (allExpenses == null || !allExpenses.Any())
                 {
-                    MessageBox.Show("No expense data found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 
