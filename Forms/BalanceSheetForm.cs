@@ -1,82 +1,168 @@
 using System;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using ExpenseTracker.Database;
 
 namespace ExpenseTracker.Forms
 {
-    public partial class BalanceSheetForm : BaseForm
+    public partial class BalanceSheetForm : Form
     {
-        public BalanceSheetForm(string username) : base(username)
+        private TableLayoutPanel mainPanel;
+        private Button btnClose;
+        private readonly string currentUsername;
+        private readonly Color primaryColor = Color.FromArgb(63, 81, 181);
+        private readonly Color textColor = Color.FromArgb(33, 33, 33);
+        private readonly Color positiveColor = Color.FromArgb(76, 175, 80);
+        private readonly Color negativeColor = Color.FromArgb(244, 67, 54);
+
+        public BalanceSheetForm(string username)
         {
+            currentUsername = username;
             InitializeComponent();
             PopulateBalanceSheet();
+            ApplyModernStyling();
         }
 
         private void InitializeComponent()
         {
-            // Create TableLayoutPanel for better alignment
-            tableLayoutPanel = new TableLayoutPanel
+            this.Text = "Balance Sheet";
+            this.Size = new Size(600, 500);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.BackColor = Color.White;
+
+            // Main container
+            var containerPanel = new Panel
             {
-                Dock = DockStyle.None,
-                Location = new System.Drawing.Point(100, 100),
-                Size = new System.Drawing.Size(600, 400),
-                ColumnCount = 2,
-                RowCount = 5,
-                Anchor = AnchorStyles.None,
-                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
+                Dock = DockStyle.Fill,
+                Padding = new Padding(20),
+                BackColor = Color.White
             };
 
-            // Add column styles for better alignment
-            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-            // Add row styles for equal spacing
-            for (int i = 0; i < 5; i++)
+            // Create main panel
+            mainPanel = new TableLayoutPanel
             {
-                tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            }
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 7,
+                BackColor = Color.White,
+                CellBorderStyle = TableLayoutPanelCellBorderStyle.None,
+                ColumnStyles = 
+                {
+                    new ColumnStyle(SizeType.Percent, 50),
+                    new ColumnStyle(SizeType.Percent, 50)
+                }
+            };
 
-            // Add labels for balance sheet items
+            // Add title
+            var titleLabel = new Label
+            {
+                Text = "Balance Sheet",
+                Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold),
+                ForeColor = primaryColor,
+                Dock = DockStyle.Top,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Height = 50
+            };
+
+            // Add balance sheet items with improved spacing
             string[] labels = { "Cash Balance", "Credit Card Balance", "Total Expenses", "Total Income", "Net Worth" };
             
             for (int i = 0; i < labels.Length; i++)
             {
+                var itemPanel = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    Margin = new Padding(10),
+                    Padding = new Padding(15),
+                    BackColor = Color.FromArgb(250, 250, 250)
+                };
+
                 var labelName = new Label
                 {
                     Text = labels[i],
-                    AutoSize = true,
-                    Font = new System.Drawing.Font(FontFamily.GenericSansSerif, 12),
-                    Anchor = AnchorStyles.None
+                    Font = new Font("Segoe UI", 11F),
+                    ForeColor = textColor,
+                    Dock = DockStyle.Left,
+                    AutoSize = true
                 };
                 
                 var labelValue = new Label
                 {
                     Name = $"lbl{labels[i].Replace(" ", "")}Value",
-                    AutoSize = true,
-                    Font = new System.Drawing.Font(FontFamily.GenericSansSerif, 12, System.Drawing.FontStyle.Bold),
-                    Anchor = AnchorStyles.None
+                    Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                    ForeColor = primaryColor,
+                    Dock = DockStyle.Right,
+                    AutoSize = true
                 };
 
-                tableLayoutPanel.Controls.Add(labelName, 0, i);
-                tableLayoutPanel.Controls.Add(labelValue, 1, i);
+                itemPanel.Controls.Add(labelValue);
+                itemPanel.Controls.Add(labelName);
+                mainPanel.Controls.Add(itemPanel, i % 2, i / 2 + 1);
             }
 
-            // Back to Dashboard Button
-            btnBackToDashboard = new Button
+            // Add close button
+            var buttonPanel = new Panel
             {
-                Text = "Back to Dashboard",
-                Location = new System.Drawing.Point(350, 520),
-                Size = new System.Drawing.Size(150, 30),
-                Anchor = AnchorStyles.None
+                Dock = DockStyle.Bottom,
+                Height = 60,
+                Padding = new Padding(0, 10, 0, 0)
             };
-            btnBackToDashboard.Click += BtnBackToDashboard_Click;
 
-            // Add controls to form
-            this.Controls.Add(tableLayoutPanel);
-            this.Controls.Add(btnBackToDashboard);
+            btnClose = new Button
+            {
+                Text = "Close",
+                Size = new Size(120, 40),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = primaryColor,
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10F),
+                Cursor = Cursors.Hand,
+                Location = new Point((buttonPanel.Width - 120) / 2, 10)
+            };
+            btnClose.FlatAppearance.BorderSize = 0;
+            btnClose.Click += (s, e) => this.Hide();
 
-            this.Text = "Balance Sheet";
-            this.Size = new System.Drawing.Size(800, 600);
+            buttonPanel.Controls.Add(btnClose);
+            
+            // Layout components
+            containerPanel.Controls.Add(mainPanel);
+            this.Controls.Add(buttonPanel);
+            this.Controls.Add(titleLabel);
+            this.Controls.Add(containerPanel);
+        }
+
+        private void ApplyModernStyling()
+        {
+            // Add hover effects
+            btnClose.MouseEnter += (s, e) => {
+                btnClose.BackColor = Color.FromArgb(48, 63, 159);
+            };
+            btnClose.MouseLeave += (s, e) => {
+                btnClose.BackColor = primaryColor;
+            };
+
+            // Add shadow effect to panels
+            foreach (Control control in mainPanel.Controls)
+            {
+                if (control is Panel panel)
+                {
+                    panel.Paint += (s, e) => {
+                        var rect = new Rectangle(0, 0, panel.Width, panel.Height);
+                        using (var path = new System.Drawing.Drawing2D.GraphicsPath())
+                        {
+                            path.AddRectangle(rect);
+                            using (var brush = new SolidBrush(Color.FromArgb(5, 0, 0, 0)))
+                            {
+                                e.Graphics.FillPath(brush, path);
+                            }
+                        }
+                    };
+                }
+            }
         }
 
         private void PopulateBalanceSheet()
@@ -96,21 +182,22 @@ namespace ExpenseTracker.Forms
             decimal totalIncome = expenses.Sum(e => e.CreditAmount);
             decimal netWorth = totalIncome - totalExpenses;
 
-            // Update labels
-            tableLayoutPanel.Controls.Find("lblCashBalanceValue", true)[0].Text = $"₹{cashBalance:N2}";
-            tableLayoutPanel.Controls.Find("lblCreditCardBalanceValue", true)[0].Text = $"₹{creditCardBalance:N2}";
-            tableLayoutPanel.Controls.Find("lblTotalExpensesValue", true)[0].Text = $"₹{totalExpenses:N2}";
-            tableLayoutPanel.Controls.Find("lblTotalIncomeValue", true)[0].Text = $"₹{totalIncome:N2}";
-            tableLayoutPanel.Controls.Find("lblNetWorthValue", true)[0].Text = $"₹{netWorth:N2}";
+            // Update labels with appropriate colors
+            UpdateBalanceLabel("CashBalance", cashBalance);
+            UpdateBalanceLabel("CreditCardBalance", creditCardBalance);
+            UpdateBalanceLabel("TotalExpenses", -totalExpenses);
+            UpdateBalanceLabel("TotalIncome", totalIncome);
+            UpdateBalanceLabel("NetWorth", netWorth);
         }
 
-        private void BtnBackToDashboard_Click(object sender, EventArgs e)
+        private void UpdateBalanceLabel(string labelName, decimal value)
         {
-            BackToDashboard();
+            var label = mainPanel.Controls.Find($"lbl{labelName}Value", true)[0] as Label;
+            if (label != null)
+            {
+                label.Text = $"₹{Math.Abs(value):N2}";
+                label.ForeColor = value >= 0 ? positiveColor : negativeColor;
+            }
         }
-
-        // Form controls
-        private TableLayoutPanel tableLayoutPanel;
-        private Button btnBackToDashboard;
     }
 }

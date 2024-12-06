@@ -7,8 +7,8 @@ namespace ExpenseTracker.Forms
     {
         protected MenuStrip mainMenu;
         protected string currentUsername;
-        private const int FormWidth = 1920;
-        private const int FormHeight = 1080;
+        protected const int FormWidth = 1920;
+        protected const int FormHeight = 1080;
         private static Form mainDashboard; // Keep track of the main dashboard
         protected string Username { get; private set; }
         protected MenuStrip MainMenu { get; private set; }
@@ -30,13 +30,11 @@ namespace ExpenseTracker.Forms
 
         private void SetStandardFormProperties()
         {
-            this.Size = new System.Drawing.Size(FormWidth, FormHeight);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = true;
-            this.MinimizeBox = true;
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.Padding = new Padding(20);
+            this.AutoSize = true;
         }
 
         private class CustomMenuRenderer : ToolStripProfessionalRenderer
@@ -104,9 +102,10 @@ namespace ExpenseTracker.Forms
             mainMenu = new MenuStrip
             {
                 Renderer = new CustomMenuRenderer(),
-                BackColor = Color.FromArgb(30, 30, 30),
-                ForeColor = Color.White,
-                Padding = new Padding(5, 2, 0, 2)
+                BackColor = Color.FromArgb(129, 129, 219),
+                ForeColor = Color.Black,
+                Padding = new Padding(5, 2, 5, 2),
+                Margin = new Padding(5, 2, 5, 2)
             };
 
             // Create menu items with custom styling
@@ -127,19 +126,33 @@ namespace ExpenseTracker.Forms
                 new ToolStripSeparator(),
                 viewExpensesItem
             });
+            expenseMenu.DropDown.BackColor = Color.FromArgb(129, 129, 219);
 
             var balanceSheetMenuItem = CreateMenuItem("Balance Sheet", "\uE9D2");
-            balanceSheetMenuItem.Click += (s, e) => NavigateToForm(new BalanceSheetForm(currentUsername));
+            balanceSheetMenuItem.Click += OpenBalanceSheet;
 
             var profileMenuItem = CreateMenuItem("Profile", "\uE77B");
-            profileMenuItem.Click += (s, e) => NavigateToForm(new ProfileForm(currentUsername));
+            profileMenuItem.Click += OpenProfile;
+
+            var logoutMenuItem = CreateMenuItem("Logout", "\uE77B");
+            logoutMenuItem.Click += BtnLogout_Click;
+
 
             // Add menu items to menu strip
             mainMenu.Items.AddRange(new ToolStripItem[] {
                 dashboardMenuItem,
+                new ToolStripSeparator()
+                {
+                    Dock = DockStyle.Fill,
+                    ForeColor = BackColor
+                },
                 expenseMenu,
+                new ToolStripSeparator(),
                 balanceSheetMenuItem,
-                profileMenuItem
+                new ToolStripSeparator(),
+                profileMenuItem,
+                new ToolStripSeparator(),
+                logoutMenuItem
             });
 
             // Add menu to form
@@ -152,11 +165,12 @@ namespace ExpenseTracker.Forms
             var item = new ToolStripMenuItem
             {
                 Text = text,
-                Font = new Font("Segoe UI", 9F),
+                Font = new Font("Segoe UI", 12F),
                 ForeColor = Color.White,
-                Padding = new Padding(8, 4, 8, 4),
+                Padding = new Padding(8, 5, 8, 5),
                 AutoSize = true,
-                Height = 30
+                Height = 30,
+                BackColor = Color.FromArgb(178, 177, 230),
             };
 
             // Add hover event handlers for smooth animation effect
@@ -196,6 +210,31 @@ namespace ExpenseTracker.Forms
             var expenseListForm = new ExpenseListForm(Username);
             expenseListForm.ShowDialog(this);
         }
+
+        private void OpenBalanceSheet(object sender, EventArgs e)
+        {
+            var balanceSheetForm = new BalanceSheetForm(Username);
+            balanceSheetForm.ShowDialog(this);
+        }
+
+        private void OpenProfile(object sender, EventArgs e)
+        {
+            var profileForm = new ProfileForm(Username);
+            profileForm.ShowDialog(this);
+        }
+
+        private void BtnLogout_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to logout?", "Logout",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                this.Hide();
+                var loginForm = new LoginForm();
+                loginForm.Show();
+                this.Close();
+            }
+        }
+
 
         protected void NavigateToForm(Form newForm)
         {

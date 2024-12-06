@@ -6,6 +6,7 @@ using System.Linq;
 using System.Drawing;
 using System.ComponentModel;
 
+
 namespace ExpenseTracker.Forms
 {
     public partial class DashboardForm : BaseForm
@@ -23,6 +24,7 @@ namespace ExpenseTracker.Forms
         private DateTimePicker dtpEndDate;
         private Button btnApplyFilter;
         private TableLayoutPanel mainLayout;
+        private TableLayoutPanel headerLayout;
         private TableLayoutPanel summaryPanel;
         private TableLayoutPanel chartsPanel;
         private TableLayoutPanel filterPanel;
@@ -64,7 +66,7 @@ namespace ExpenseTracker.Forms
             try
             {
                 this.Text = "Expense Dashboard";
-                this.Size = new Size(1100, 700);
+               // this.Size = new Size(BaseForm.FormWidth, BaseForm.FormHeight);
                 this.WindowState = FormWindowState.Maximized;
 
                 // Initialize date pickers with default values
@@ -85,27 +87,36 @@ namespace ExpenseTracker.Forms
                 {
                     Dock = DockStyle.Fill,
                     ColumnCount = 1,
-                    RowCount = 5,
-                    Padding = new Padding(25),
+                    RowCount = 3,
+                    Padding = new Padding(0,5,0,0),
                     BackColor = Color.LightGray
                 };
 
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 2));
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60));  // Filter panel
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 2));
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100)); // Summary panel
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 2));
+
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));                
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 43));  // Filter panel              
                 mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 70));   // Charts panel
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 5));
-                // Initialize all panels
+                
                 InitializeFilterPanel();
                 InitializeSummaryPanel();
                 InitializeChartsPanel();
 
+                headerLayout = new TableLayoutPanel
+                {
+                    Dock = DockStyle.Fill,
+                    ColumnCount = 3,
+                    RowCount = 1,
+                    BackColor = Color.LightGray
+                };
+                headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize, 400));
+                headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 450));
+                headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize, 600));
+
+                headerLayout.Controls.Add(summaryPanel, 0, 0);
+                headerLayout.Controls.Add(filterPanel, 2, 0);
                 // Add panels to main layout
-                mainLayout.Controls.Add(filterPanel, 0, 1);
-                mainLayout.Controls.Add(summaryPanel, 0, 3);
-                mainLayout.Controls.Add(chartsPanel, 0, 5);
+                mainLayout.Controls.Add(headerLayout, 0, 1);
+                mainLayout.Controls.Add(chartsPanel, 0, 2);
 
                 this.Controls.Add(mainLayout);
 
@@ -120,21 +131,22 @@ namespace ExpenseTracker.Forms
 
         private void InitializeFilterPanel()
         {
+
             filterPanel = new TableLayoutPanel
             {
-                Dock = DockStyle.Fill,
+                Width = 620,
+                Height = 35,
                 ColumnCount = 7,
                 RowCount = 1,
                 BackColor = Color.WhiteSmoke,
-                Margin = new Padding(0, 0, 0, 10),
-                Padding = new Padding(10)
             };
 
             var lblStartDate = new Label
             {
                 Text = "Start Date:",
-                TextAlign = ContentAlignment.MiddleRight,
-                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.BottomRight,
+                Width = 120,
+                Height = 25,
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9F, FontStyle.Regular),
                 Margin = new Padding(5)
@@ -143,8 +155,9 @@ namespace ExpenseTracker.Forms
             var lblEndDate = new Label
             {
                 Text = "End Date:",
-                TextAlign = ContentAlignment.MiddleRight,
-                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.BottomRight,
+                Width = 120,
+                Height = 25,
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9F, FontStyle.Regular),
                 Margin = new Padding(5)
@@ -154,10 +167,10 @@ namespace ExpenseTracker.Forms
             {
                 Format = DateTimePickerFormat.Short,
                 Value = DateTime.Today.AddMonths(-1),
-                Dock = DockStyle.Fill,
                 DropDownAlign = LeftRightAlignment.Left,
                 Font = new Font("Segoe UI", 9F, FontStyle.Regular),
                 Width = 120,
+                Height = 25,
                 Margin = new Padding(5),
                 BackColor = Color.White
             };
@@ -166,10 +179,10 @@ namespace ExpenseTracker.Forms
             {
                 Format = DateTimePickerFormat.Short,
                 Value = DateTime.Today,
-                Dock = DockStyle.Fill,
                 DropDownAlign = LeftRightAlignment.Left,
                 Font = new Font("Segoe UI", 9F, FontStyle.Regular),
                 Width = 120,
+                Height = 25,
                 Margin = new Padding(5),
                 BackColor = Color.White
             };
@@ -180,8 +193,8 @@ namespace ExpenseTracker.Forms
                 BackColor = Color.FromArgb(0, 120, 215),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Width = 100,
-                Height = 30,
+                Width = 120,
+                Height = 25,
                 Font = new Font("Segoe UI", 9F, FontStyle.Regular),
                 Margin = new Padding(10, 0, 10, 0),
                 Anchor = AnchorStyles.None,
@@ -201,36 +214,39 @@ namespace ExpenseTracker.Forms
         {
             summaryPanel = new TableLayoutPanel
             {
-                Dock = DockStyle.Fill,
-                ColumnCount = 3,
-                RowCount = 3,
+                ColumnCount = 6,
+                RowCount = 1,
                 BackColor = Color.WhiteSmoke,
                 CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
-                Margin = new Padding(0, 0, 0, 20)
+                Width = 800,
+                Height = 35,
             };
 
             // Labels for titles
             var lblExpensesTitle = new Label
             {
-                Text = "Total Expenses",
+                Text = "Total Expenses: ",
+                Width = 150,
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.BottomCenter,
+                TextAlign = ContentAlignment.MiddleRight,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
 
             var lblIncomeTitle = new Label
             {
-                Text = "Total Income",
+                Text = "Total Income: ",
+                Width = 150,
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.BottomCenter,
+                TextAlign = ContentAlignment.MiddleRight,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
 
             var lblBalanceTitle = new Label
             {
-                Text = "Net Balance",
+                Text = "Net Balance: ",
+                Width = 150,
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.BottomCenter,
+                TextAlign = ContentAlignment.MiddleRight,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
 
@@ -239,8 +255,8 @@ namespace ExpenseTracker.Forms
             {
                 Text = "₹0.00",
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.TopCenter,
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.Red
             };
 
@@ -248,8 +264,8 @@ namespace ExpenseTracker.Forms
             {
                 Text = "₹0.00",
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.TopCenter,
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.Green
             };
 
@@ -257,36 +273,19 @@ namespace ExpenseTracker.Forms
             {
                 Text = "₹0.00",
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.TopCenter,
-                Font = new Font("Segoe UI", 14, FontStyle.Bold)
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold)
             };
 
-            // Labels for percentage change
-            lblExpenseChange = new Label
-            {
-                Text = "",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.TopCenter,
-                Font = new Font("Segoe UI", 9)
-            };
-
-            lblIncomeChange = new Label
-            {
-                Text = "",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.TopCenter,
-                Font = new Font("Segoe UI", 9)
-            };
+           
 
             // Add controls to summary panel
             summaryPanel.Controls.Add(lblExpensesTitle, 0, 0);
-            summaryPanel.Controls.Add(lblIncomeTitle, 1, 0);
-            summaryPanel.Controls.Add(lblBalanceTitle, 2, 0);
-            summaryPanel.Controls.Add(lblTotalExpenses, 0, 1);
-            summaryPanel.Controls.Add(lblTotalIncome, 1, 1);
-            summaryPanel.Controls.Add(lblNetBalance, 2, 1);
-            summaryPanel.Controls.Add(lblExpenseChange, 0, 2);
-            summaryPanel.Controls.Add(lblIncomeChange, 1, 2);
+            summaryPanel.Controls.Add(lblTotalExpenses, 1, 0);
+            summaryPanel.Controls.Add(lblIncomeTitle, 2, 0);
+            summaryPanel.Controls.Add(lblTotalIncome, 3, 0);
+            summaryPanel.Controls.Add(lblBalanceTitle, 4, 0);
+            summaryPanel.Controls.Add(lblNetBalance, 5, 0);
         }
 
         private void InitializeChartsPanel()
