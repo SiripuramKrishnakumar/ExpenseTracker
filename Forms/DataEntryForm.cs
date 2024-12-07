@@ -22,6 +22,9 @@ namespace ExpenseTracker.Forms
         private Button btnBulkUpload;
         private Button btnDownloadTemplate;
 
+        [System.Runtime.InteropServices.DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+
         public DataEntryForm(string username)
         {
             currentUsername = username;
@@ -128,7 +131,7 @@ namespace ExpenseTracker.Forms
             {
                 Text = "Add Expense",
                 Dock = DockStyle.None,
-                BackColor = Color.FromArgb(0, 122, 204),
+                BackColor = Color.FromArgb(63, 81, 181),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Margin = new Padding(0, 0, 10, 0),
@@ -137,13 +140,32 @@ namespace ExpenseTracker.Forms
                 Font = new Font(this.Font.FontFamily, 9, FontStyle.Bold),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
+            btnAddExpense.FlatAppearance.BorderSize = 0;
+            btnAddExpense.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnAddExpense.Width, btnAddExpense.Height, 2, 2));
+
+            btnAddExpense.Resize += (s, e) =>
+            {
+                btnAddExpense.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnAddExpense.Width, btnAddExpense.Height, 2, 2));
+            };
+
+            btnAddExpense.MouseEnter += (s, e) =>
+            {
+                btnAddExpense.BackColor = Color.FromArgb(63, 81, 181);
+                btnAddExpense.ForeColor = Color.FromArgb(240, 240, 240);
+            };
+            btnAddExpense.MouseLeave += (s, e) =>
+            {
+                btnAddExpense.BackColor = Color.FromArgb(63, 81, 181);
+                btnAddExpense.ForeColor = Color.White;
+            };
+
             btnAddExpense.Click += BtnAddExpense_Click;
 
             btnCancel = new Button
             {
                 Text = "Cancel",
                 Dock = DockStyle.None,
-                BackColor = Color.FromArgb(153, 153, 153),
+                BackColor = Color.FromArgb(63, 81, 181),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Margin = new Padding(0, 0, 10, 0),
@@ -152,6 +174,25 @@ namespace ExpenseTracker.Forms
                 Font = new Font(this.Font.FontFamily, 9, FontStyle.Regular),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnCancel.Width, btnCancel.Height, 2, 2));
+
+            btnCancel.Resize += (s, e) =>
+            {
+                btnCancel.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnCancel.Width, btnCancel.Height, 2, 2));
+            };
+
+            btnCancel.MouseEnter += (s, e) =>
+            {
+                btnCancel.BackColor = Color.FromArgb(63, 81, 181);
+                btnCancel.ForeColor = Color.FromArgb(240, 240, 240);
+            };
+            btnCancel.MouseLeave += (s, e) =>
+            {
+                btnCancel.BackColor = Color.FromArgb(63, 81, 181);
+                btnCancel.ForeColor = Color.White;
+            };
+
             btnCancel.Click += BtnCancel_Click;
 
             // Bulk Upload Panel
@@ -171,7 +212,7 @@ namespace ExpenseTracker.Forms
             {
                 Text = "Bulk Upload",
                 Dock = DockStyle.None,
-                BackColor = Color.FromArgb(76, 175, 80),
+                BackColor = Color.FromArgb(63, 81, 181),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Margin = new Padding(0, 0, 10, 0),
@@ -180,6 +221,25 @@ namespace ExpenseTracker.Forms
                 Font = new Font(this.Font.FontFamily, 9, FontStyle.Regular),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
+            btnBulkUpload.FlatAppearance.BorderSize = 0;
+            btnBulkUpload.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnBulkUpload.Width, btnBulkUpload.Height, 2, 2));
+
+            btnBulkUpload.Resize += (s, e) =>
+            {
+                btnBulkUpload.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnBulkUpload.Width, btnBulkUpload.Height, 2, 2));
+            };
+
+            btnBulkUpload.MouseEnter += (s, e) =>
+            {
+                btnBulkUpload.BackColor = Color.FromArgb(63, 81, 181);
+                btnBulkUpload.ForeColor = Color.FromArgb(240, 240, 240);
+            };
+            btnBulkUpload.MouseLeave += (s, e) =>
+            {
+                btnBulkUpload.BackColor = Color.FromArgb(63, 81, 181);
+                btnBulkUpload.ForeColor = Color.White;
+            };
+
             btnBulkUpload.Click += BtnBulkUpload_Click;
 
             btnDownloadTemplate = new Button

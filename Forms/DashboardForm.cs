@@ -6,7 +6,6 @@ using System.Linq;
 using System.Drawing;
 using System.ComponentModel;
 
-
 namespace ExpenseTracker.Forms
 {
     public partial class DashboardForm : BaseForm
@@ -29,6 +28,9 @@ namespace ExpenseTracker.Forms
         private TableLayoutPanel chartsPanel;
         private TableLayoutPanel filterPanel;
         private new readonly string currentUsername;
+
+        [System.Runtime.InteropServices.DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
 
         public DashboardForm(string username) : base(username)
         {
@@ -93,8 +95,8 @@ namespace ExpenseTracker.Forms
                 };
 
 
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));                
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 43));  // Filter panel              
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));                
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));  // Filter panel              
                 mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 70));   // Charts panel
                 
                 InitializeFilterPanel();
@@ -190,7 +192,7 @@ namespace ExpenseTracker.Forms
             btnApplyFilter = new Button
             {
                 Text = "Apply Filter",
-                BackColor = Color.FromArgb(0, 120, 215),
+                BackColor = Color.FromArgb(63, 81, 181),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Width = 120,
@@ -200,8 +202,26 @@ namespace ExpenseTracker.Forms
                 Anchor = AnchorStyles.None,
                 Cursor = Cursors.Hand
             };
-            btnApplyFilter.FlatAppearance.BorderColor = Color.FromArgb(0, 100, 195);
+            btnApplyFilter.FlatAppearance.BorderSize = 0;
+            btnApplyFilter.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnApplyFilter.Width, btnApplyFilter.Height, 2, 2));
+
+            btnApplyFilter.Resize += (s, e) =>
+            {
+                btnApplyFilter.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnApplyFilter.Width, btnApplyFilter.Height, 2, 2));
+            };
+
             btnApplyFilter.Click += (s, e) => LoadDashboardData();
+
+            btnApplyFilter.MouseEnter += (s, e) =>
+            {
+                btnApplyFilter.BackColor = Color.FromArgb(63, 81, 181);
+                btnApplyFilter.ForeColor = Color.FromArgb(240, 240, 240);
+            };
+            btnApplyFilter.MouseLeave += (s, e) =>
+            {
+                btnApplyFilter.BackColor = Color.FromArgb(63, 81, 181);
+                btnApplyFilter.ForeColor = Color.White;
+            };
 
             filterPanel.Controls.Add(lblStartDate, 1, 0);
             filterPanel.Controls.Add(dtpStartDate, 2, 0);
@@ -277,7 +297,6 @@ namespace ExpenseTracker.Forms
                 Font = new Font("Segoe UI", 12, FontStyle.Bold)
             };
 
-           
 
             // Add controls to summary panel
             summaryPanel.Controls.Add(lblExpensesTitle, 0, 0);
@@ -362,7 +381,8 @@ namespace ExpenseTracker.Forms
             {
                 series["PieLabelStyle"] = "Outside";
                 series.IsValueShownAsLabel = true;
-                series.Label = "#PERCENT{P0}";
+                series.Label = "#VALX: #VALY{C} (#PERCENT{P0})"; 
+                series.LegendText = "#VALX"; 
             }
             else
             {

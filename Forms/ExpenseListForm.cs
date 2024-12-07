@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using ExpenseTracker.Database;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ExpenseTracker.Forms
 {
@@ -24,6 +25,9 @@ namespace ExpenseTracker.Forms
         private Panel gridPanel;
         private TableLayoutPanel filterLayout;
         private readonly string currentUsername;
+
+        [System.Runtime.InteropServices.DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
 
         public ExpenseListForm(string username)
         {
@@ -65,7 +69,7 @@ namespace ExpenseTracker.Forms
                 RowCount = 2,
                 Height = 70,
                 Padding = new Padding(0),
-                ColumnStyles = 
+                ColumnStyles =
                 {
                     new ColumnStyle(SizeType.Percent, 16.66f),
                     new ColumnStyle(SizeType.Percent, 16.66f),
@@ -184,13 +188,32 @@ namespace ExpenseTracker.Forms
                 Dock = DockStyle.None,
                 Height = 28,
                 Width = 300,
-                BackColor = System.Drawing.Color.FromArgb(0, 122, 204),
-                ForeColor = System.Drawing.Color.White,
+                BackColor = Color.FromArgb(63, 81, 181),
+                ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font(this.Font.FontFamily, 9, FontStyle.Bold),
                 Margin = new Padding(0, 0, 10, 0),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
+            btnFilter.FlatAppearance.BorderSize = 0;
+            btnFilter.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnFilter.Width, btnFilter.Height, 2, 2));
+
+            btnFilter.Resize += (s, e) =>
+            {
+                btnFilter.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnFilter.Width, btnFilter.Height, 2, 2));
+            };
+
+            btnFilter.MouseEnter += (s, e) =>
+            {
+                btnFilter.BackColor = Color.FromArgb(63, 81, 181);
+                btnFilter.ForeColor = Color.FromArgb(240, 240, 240);
+            };
+            btnFilter.MouseLeave += (s, e) =>
+            {
+                btnFilter.BackColor = Color.FromArgb(63, 81, 181);
+                btnFilter.ForeColor = Color.White;
+            };
+
             btnFilter.Click += BtnFilter_Click;
 
             btnClearFilter = new Button
@@ -199,13 +222,32 @@ namespace ExpenseTracker.Forms
                 Dock = DockStyle.None,
                 Height = 28,
                 Width = 300,
-                BackColor = System.Drawing.Color.FromArgb(153, 153, 153),
-                ForeColor = System.Drawing.Color.White,
+                BackColor = Color.FromArgb(63, 81, 181),
+                ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font(this.Font.FontFamily, 9, FontStyle.Regular),
                 Margin = new Padding(0, 0, 10, 0),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
+            btnClearFilter.FlatAppearance.BorderSize = 0;
+            btnClearFilter.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnClearFilter.Width, btnClearFilter.Height, 2, 2));
+
+            btnClearFilter.Resize += (s, e) =>
+            {
+                btnClearFilter.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, btnClearFilter.Width, btnClearFilter.Height, 2, 2));
+            };
+
+            btnClearFilter.MouseEnter += (s, e) =>
+            {
+                btnClearFilter.BackColor = Color.FromArgb(63, 81, 181);
+                btnClearFilter.ForeColor = Color.FromArgb(240, 240, 240);
+            };
+            btnClearFilter.MouseLeave += (s, e) =>
+            {
+                btnClearFilter.BackColor = Color.FromArgb(63, 81, 181);
+                btnClearFilter.ForeColor = Color.White;
+            };
+
             btnClearFilter.Click += BtnClearFilter_Click;
 
             // Add controls to filter layout

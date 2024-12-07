@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace ExpenseTracker.Forms
 {
@@ -102,31 +103,21 @@ namespace ExpenseTracker.Forms
             mainMenu = new MenuStrip
             {
                 Renderer = new CustomMenuRenderer(),
-                BackColor = Color.FromArgb(129, 129, 219),
-                ForeColor = Color.Black,
-                Padding = new Padding(5, 2, 5, 2),
-                Margin = new Padding(5, 2, 5, 2)
+                BackColor = Color.FromArgb(131, 141, 201),
+                Padding = new Padding(8, 4, 8, 4),
+                Margin = new Padding(0),
+                ImageScalingSize = new Size(20, 20)
             };
 
             // Create menu items with custom styling
             var dashboardMenuItem = CreateMenuItem("Dashboard", "\uE80F");
             dashboardMenuItem.Click += (s, e) => NavigateToForm(new DashboardForm(currentUsername));
 
-            // Create Expense menu
-            var expenseMenu = CreateMenuItem("Expense", "\uE82E");
+
             var addExpenseItem = CreateMenuItem("Add Expense", "\uE710");
             var viewExpensesItem = CreateMenuItem("View Expenses", "\uE8A1");
-
             addExpenseItem.Click += OpenAddExpense;
             viewExpensesItem.Click += OpenViewExpenses;
-
-            expenseMenu.DropDownItems.AddRange(new ToolStripItem[]
-            {
-                addExpenseItem,
-                new ToolStripSeparator(),
-                viewExpensesItem
-            });
-            expenseMenu.DropDown.BackColor = Color.FromArgb(129, 129, 219);
 
             var balanceSheetMenuItem = CreateMenuItem("Balance Sheet", "\uE9D2");
             balanceSheetMenuItem.Click += OpenBalanceSheet;
@@ -135,23 +126,17 @@ namespace ExpenseTracker.Forms
             profileMenuItem.Click += OpenProfile;
 
             var logoutMenuItem = CreateMenuItem("Logout", "\uE77B");
+            logoutMenuItem.Margin = new Padding(800, 0, 0, 0);
             logoutMenuItem.Click += BtnLogout_Click;
 
 
             // Add menu items to menu strip
             mainMenu.Items.AddRange(new ToolStripItem[] {
                 dashboardMenuItem,
-                new ToolStripSeparator()
-                {
-                    Dock = DockStyle.Fill,
-                    ForeColor = BackColor
-                },
-                expenseMenu,
-                new ToolStripSeparator(),
+                addExpenseItem,
+                viewExpensesItem,
                 balanceSheetMenuItem,
-                new ToolStripSeparator(),
                 profileMenuItem,
-                new ToolStripSeparator(),
                 logoutMenuItem
             });
 
@@ -159,6 +144,7 @@ namespace ExpenseTracker.Forms
             this.MainMenuStrip = mainMenu;
             this.Controls.Add(mainMenu);
         }
+
 
         private ToolStripMenuItem CreateMenuItem(string text, string icon)
         {
@@ -168,10 +154,32 @@ namespace ExpenseTracker.Forms
                 Font = new Font("Segoe UI", 12F),
                 ForeColor = Color.White,
                 Padding = new Padding(8, 5, 8, 5),
+                Margin = new Padding(0, 0, 50, 0),
                 AutoSize = true,
                 Height = 30,
-                BackColor = Color.FromArgb(178, 177, 230),
+                BackColor = Color.FromArgb(63, 81, 181),
             };
+
+            if (!string.IsNullOrEmpty(icon))
+            {
+                var iconLabel = new Label
+                {
+                    Text = icon,
+                    Font = new Font("Segoe MDL2 Assets", 12F),
+                    AutoSize = true,
+                    ForeColor = Color.White,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleLeft
+                };
+
+                item.Text = " " + text; // Add padding for icon
+                item.Image = new Bitmap(20, 20);
+                using Graphics g = Graphics.FromImage(item.Image);
+                g.Clear(Color.Transparent);
+                using var iconFont = new Font("Segoe MDL2 Assets", 12F);
+                using var brush = new SolidBrush(Color.White);
+                g.DrawString(icon, iconFont, brush, 2, 2);
+            }
 
             // Add hover event handlers for smooth animation effect
             item.MouseEnter += (s, e) =>

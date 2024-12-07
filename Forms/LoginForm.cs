@@ -119,7 +119,6 @@ namespace ExpenseTracker.Forms
                 RowCount = 1,
                 Dock = DockStyle.Bottom,
                 Height = 50,
-                
             };
             buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             buttonPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
@@ -163,33 +162,43 @@ namespace ExpenseTracker.Forms
             {
                 Text = text,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = isPrimary ? primaryColor : Color.FromArgb(0, 120, 215),
-                ForeColor = isPrimary ? Color.White : textColor,
+                BackColor = Color.FromArgb(63, 81, 181),
+                ForeColor = Color.White,
                 Font = new Font("Segoe UI", 11F),
                 Cursor = Cursors.Hand,
                 Size = new Size(120, 40),
                 Margin = new Padding(5),
                 Anchor = AnchorStyles.None,
-                
             };
             button.FlatAppearance.BorderSize = 0;
+            button.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, button.Width, button.Height, 2, 2));
+            button.Resize += (s, e) =>
+            {
+                button.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, button.Width, button.Height, 2, 2));
+            };
 
             // Add hover effects
             button.MouseEnter += (s, e) =>
             {
-                button.BackColor = isPrimary ?
-                    Color.FromArgb(48, 63, 159) :
-                    Color.FromArgb(224, 224, 224);
+                button.BackColor = Color.FromArgb(63, 81, 181);
+                button.ForeColor = Color.FromArgb(240, 240, 240);
             };
             button.MouseLeave += (s, e) =>
             {
-                button.BackColor = isPrimary ?
-                    primaryColor :
-                   Color.FromArgb(0, 120, 215);
+                button.BackColor = Color.FromArgb(63, 81, 181);
+                button.ForeColor = Color.White;
+            };
+
+            button.Resize += (s, e) =>
+            {
+                button.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, button.Width, button.Height, 2, 2));
             };
 
             return button;
         }
+
+        [System.Runtime.InteropServices.DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
 
         private void CheckDatabaseAndUser()
         {
